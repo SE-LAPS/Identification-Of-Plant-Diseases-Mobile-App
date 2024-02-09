@@ -1,105 +1,46 @@
 import 'package:flutter/material.dart';
-import 'package:firebase_ml_vision/firebase_ml_vision.dart';
-import 'package:image_picker/image_picker.dart';
-import 'dart:io';
-import 'dart:ui' as ui;
+import 'package:hive_flutter/hive_flutter.dart';
+import 'package:plant_disease_detector/services/disease_provider.dart';
+import 'package:plant_disease_detector/src/home_page/home.dart';
+import 'package:plant_disease_detector/src/home_page/models/disease_model.dart';
+import 'package:plant_disease_detector/src/suggestions_page/suggestions.dart';
+import 'package:provider/provider.dart';
 
-void main() => runApp(
-      MaterialApp(
-        debugShowCheckedModeBanner: false,
-        home: MyApp(),
-      ),
-    );
+Future main() async {
+  WidgetsFlutterBinding.ensureInitialized();
+  await Hive.initFlutter();
+  Hive.registerAdapter(DiseaseAdapter());
 
-class MyApp extends StatefulWidget {
-  @override
-  _MyAppState createState() => _MyAppState();
+  await Hive.openBox<Disease>('plant_diseases');
+
+  runApp(const MyApp());
 }
 
-class _MyAppState extends State<MyApp> {
-  File _imageFile;
-  List<Face> _faces;
-  bool isLoading = false;
-  ui.Image _image;
-  final picker = ImagePicker();
+class MyApp extends StatelessWidget {
+  const MyApp({Key? key}) : super(key: key);
 
   @override
   Widget build(BuildContext context) {
-    return Scaffold(
-        floatingActionButton: FloatingActionButton(
-          onPressed: _getImage,
-          child: Icon(Icons.add_a_photo),
-        ),
-        body: isLoading
-            ? Center(child: CircularProgressIndicator())
-            : (_imageFile == null)
-                ? Center(child: Text('no image selected'))
-                : Center(
-                    child: FittedBox(
-                    child: SizedBox(
-                      width: _image.width.toDouble(),
-                      height: _image.height.toDouble(),
-                      child: CustomPaint(
-                        painter: FacePainter(_image, _faces),
-                      ),
-                    ),
-                  )));
-  }
-
-  _getImage() async {
-    final imageFile = await picker.getImage(source: ImageSource.gallery);
-    setState(() {
-      isLoading = true;
-    });
-
-    final image = FirebaseVisionImage.fromFile(File(imageFile.path));
-    final faceDetector = FirebaseVision.instance.faceDetector();
-    List<Face> faces = await faceDetector.processImage(image);
-
-    if (mounted) {
-      setState(() {
-        _imageFile = File(imageFile.path);
-        _faces = faces;
-        _loadImage(File(imageFile.path));
-      });
-    }
-  }
-
-  _loadImage(File file) async {
-    final data = await file.readAsBytes();
-    await decodeImageFromList(data).then((value) => setState(() {
-          _image = value;
-          isLoading = false;
-        }));
-  }
-}
-
-class FacePainter extends CustomPainter {
-  final ui.Image image;
-  final List<Face> faces;
-  final List<Rect> rects = [];
-
-  FacePainter(this.image, this.faces) {
-    for (var i = 0; i < faces.length; i++) {
-      rects.add(faces[i].boundingBox);
-    }
-  }
-
-  @override
-  void paint(ui.Canvas canvas, ui.Size size) {
-    final Paint paint = Paint()
-      ..style = PaintingStyle.stroke
-      ..strokeWidth = 2.0
-      ..color = Colors.yellow;
-
-    canvas.drawImage(image, Offset.zero, Paint());
-    for (var i = 0; i < faces.length; i++) {
-      canvas.drawRect(rects[i], paint);
-    }
-  }
-
-  @override
-  bool shouldRepaint(FacePainter old) {
-    return image != old.image || faces != old.faces;
+    return ChangeNotifierProvider<DiseaseService>(
+      create: (context) => DiseaseService(),
+      child: MaterialApp(
+        debugShowCheckedModeBanner: false,
+        title: 'Detect diseases',
+        theme: ThemeData(primarySwatch: Colors.green, fontFamily: 'SFRegular'),
+        onGenerateRoute: (RouteSettings routeSettings) {
+          return MaterialPageRoute<void>(
+              settings: routeSettings,
+              builder: (BuildContext context) {
+                switch (routeSettings.name) {
+                  case Suggestions.routeName:
+                    return const Suggestions();
+                  case Home.routeName:
+                  default:
+                    return const Home();
+                }
+              });
+        },
+      ),
+    );
   }
 }
