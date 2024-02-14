@@ -1,33 +1,33 @@
 {
   "project_info": {
-    "project_number": "1048922195346",
-    "project_id": "face-detection-83e89",
-    "storage_bucket": "face-detection-83e89.appspot.com"
+    "project_number": "1070897488447",
+    "project_id": "farmassist-c27d9",
+    "storage_bucket": "farmassist-c27d9.appspot.com"
   },
   "client": [
     {
       "client_info": {
-        "mobilesdk_app_id": "1:1048922195346:android:cfcb97121766c1a2e1ad4b",
+        "mobilesdk_app_id": "1:1070897488447:android:a8561f31b491aa3a684e8a",
         "android_client_info": {
-          "package_name": "com.example.face_recognition"
+          "package_name": "com.example.farmassist"
         }
       },
       "oauth_client": [
         {
-          "client_id": "1048922195346-64i66o6k1l711jntjecpe55b2kbeiaqg.apps.googleusercontent.com",
+          "client_id": "1070897488447-6aup95opofoecpvj2fblcjs5acol0eap.apps.googleusercontent.com",
           "client_type": 3
         }
       ],
       "api_key": [
         {
-          "current_key": "AIzaSyCDbDjOFb3D8syl3sILu0wj5CGuL0x4FZs"
+          "current_key": "AIzaSyD028ZffVglYzLuHFwyAhYcsGJDODcu5m8"
         }
       ],
       "services": {
         "appinvite_service": {
           "other_platform_oauth_client": [
             {
-              "client_id": "1048922195346-64i66o6k1l711jntjecpe55b2kbeiaqg.apps.googleusercontent.com",
+              "client_id": "1070897488447-6aup95opofoecpvj2fblcjs5acol0eap.apps.googleusercontent.com",
               "client_type": 3
             }
           ]
