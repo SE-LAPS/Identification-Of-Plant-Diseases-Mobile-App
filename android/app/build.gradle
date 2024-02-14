@@ -8,7 +8,7 @@ if (localPropertiesFile.exists()) {
 
 def flutterRoot = localProperties.getProperty('flutter.sdk')
 if (flutterRoot == null) {
-    throw new GradleException("Flutter SDK not found. Define location with flutter.sdk in the local.properties file.")
+    throw new FileNotFoundException("Flutter SDK not found. Define location with flutter.sdk in the local.properties file.")
 }
 
 def flutterVersionCode = localProperties.getProperty('flutter.versionCode')
@@ -24,33 +24,25 @@ if (flutterVersionName == null) {
 apply plugin: 'com.android.application'
 apply plugin: 'kotlin-android'
 apply from: "$flutterRoot/packages/flutter_tools/gradle/flutter.gradle"
+apply plugin: 'com.google.gms.google-services'  // Google Services plugin
 
 android {
-    compileSdkVersion flutter.compileSdkVersion
-
-    compileOptions {
-        sourceCompatibility JavaVersion.VERSION_1_8
-        targetCompatibility JavaVersion.VERSION_1_8
-    }
-
-    aaptOptions {
-        noCompress 'tflite'
-        noCompress 'lite'
-    }
-
-    kotlinOptions {
-        jvmTarget = '1.8'
-    }
+    compileSdkVersion 29
 
     sourceSets {
         main.java.srcDirs += 'src/main/kotlin'
     }
 
+    lintOptions {
+        disable 'InvalidPackage'
+    }
+
     defaultConfig {
         // TODO: Specify your own unique Application ID (https://developer.android.com/studio/build/application-id.html).
-        applicationId "com.suis.plant_disease_detector.plant_disease_detector"
+        applicationId "com.example.farmassist"
         minSdkVersion 19
-        targetSdkVersion flutter.targetSdkVersion
+        targetSdkVersion 29
+        multiDexEnabled true
         versionCode flutterVersionCode.toInteger()
         versionName flutterVersionName
     }
@@ -62,6 +54,12 @@ android {
             signingConfig signingConfigs.debug
         }
     }
+
+    //TFlite model
+    aaptOptions {
+        noCompress 'tflite'
+        noCompress 'lite'
+    }
 }
 
 flutter {
@@ -70,4 +68,10 @@ flutter {
 
 dependencies {
     implementation "org.jetbrains.kotlin:kotlin-stdlib-jdk7:$kotlin_version"
+    implementation platform('com.google.firebase:firebase-bom:26.1.1')
+    implementation 'com.google.firebase:firebase-firestore'
+    implementation 'com.android.support:multidex:1.0.3'
+    api 'com.google.firebase:firebase-ml-vision-image-label-model:17.0.2'
 }
+
+apply plugin: 'com.google.gms.google-services'
