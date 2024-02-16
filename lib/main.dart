@@ -1,67 +1,66 @@
-import 'package:firebase_core/firebase_core.dart';
-import 'package:firebase_messaging/firebase_messaging.dart';
 import 'package:flutter/material.dart';
-import 'package:get/get.dart';
-import 'package:susya/authentication/sign_in_button.dart';
-import 'package:susya/services/notifications.dart';
+import 'package:unisys/screens/covid_home.dart';
+import 'package:unisys/screens/home_screen.dart';
+import 'package:unisys/screens/phone_number_page.dart';
+import 'package:unisys/screens/pre_home.dart';
+import 'package:unisys/screens/first.dart';
+import 'package:unisys/screens/ph2.dart';
+import 'package:unisys/screens/report_covid.dart';
+import 'package:unisys/screens/report_emergency_covid.dart';
+import 'package:unisys/screens/report_emergency_page.dart';
+import 'package:unisys/screens/success.dart';
+import 'package:unisys/screens/summary_covid.dart';
+import 'package:unisys/screens/summary_page.dart';
+import 'package:unisys/screens/symptoms_page.dart';
+import 'package:unisys/screens/view_zone.dart';
+import 'package:unisys/screens/webview_advisory.dart';
+import 'package:unisys/screens/webview_guide.dart';
+import 'package:unisys/screens/webview_heatmap.dart';
+import 'package:unisys/utilities/constants.dart';
 
-Future<void> _firebaseMessagingBackgroundHandler(RemoteMessage message) async {
-  // If you're going to use other Firebase services in the background, such as Firestore,
-  // make sure you call `initializeApp` before using other Firebase services.
-
-  print("Handling a background message: ${message.messageId}");
-  // final FirebaseMessaging _fcm = FirebaseMessaging.instance;
-  // _fcm.subscribeToTopic("susya");
-}
-
-void main() async {
-  WidgetsFlutterBinding.ensureInitialized();
-  await Firebase.initializeApp();
-
-  FirebaseMessaging.onBackgroundMessage(_firebaseMessagingBackgroundHandler);
-
-  runApp(GetMaterialApp(
-    home: MyApp(),
-  ));
-}
+void main() => runApp(MyApp());
 
 class MyApp extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
-    return NotificationHandler(
-      child: Scaffold(
-        body: Row(
-          children: [
-            Expanded(
-              flex: 1,
-              child: Container(
-                  child: Column(
-                mainAxisAlignment: MainAxisAlignment.start,
-                crossAxisAlignment: CrossAxisAlignment.center,
-                children: [
-                  Spacer(flex: 4),
-                  Image.asset(
-                    "assets/logo.png",
-                    height: 125,
-                  ),
-                  Text("SUSya",
-                      style: TextStyle(
-                          fontSize: 35,
-                          color: Colors.green,
-                          fontWeight: FontWeight.bold)),
-                  Spacer(flex: 1),
-                  // LoginButton(
-                  //   title: "Login",
-                  //   onTap: () => Get.to(() => CameraPage()),
-                  // ),
-                  SignInButton(),
-                  Spacer(flex: 6)
-                ],
-              )),
-            ),
-          ],
+    return MaterialApp(
+      debugShowCheckedModeBanner: false,
+      title: 'Unisys',
+      theme: ThemeData(
+        scaffoldBackgroundColor: kBackgroundColor,
+        appBarTheme: AppBarTheme(
+          color: kAppBarColor,
+          brightness: Brightness.light,
+          elevation: 6.0,
+          iconTheme: IconThemeData(
+            color: kBackgroundColor,
+          ),
+          actionsIconTheme: IconThemeData(
+            color: kBackgroundColor,
+          ),
         ),
       ),
+      initialRoute: '/',
+      routes: {
+        '/': (context) => First(),
+        First.routeName: (context) => First(),
+        PreHome.routeName: (context) => PreHome(),
+        HomeScreen.routeName: (context) => HomeScreen(),
+        PhoneNumberPage.routeName: (context) => PhoneNumberPage(),
+        PhoneNumberPage2.routeName: (context) => PhoneNumberPage2(),
+        ReportEmergencyPage.routeName: (context) => ReportEmergencyPage(),
+        SummaryPage.routeName: (context) => SummaryPage(),
+        WebviewGuide.routeName: (context) => WebviewGuide(),
+        Success.routeName: (context) => Success(),
+        CovidHome.routeName: (context) => CovidHome(),
+        ReportCovid.routeName: (context) => ReportCovid(),
+        SymptomsPage.routeName: (context) => SymptomsPage(),
+        ReportEmergencyCovid.routeName: (context) => ReportEmergencyCovid(),
+        SummaryCovid.routeName: (context) => SummaryCovid(),
+        ViewZone.routeName: (context) => ViewZone(),
+        WebviewHeatmap.routeName: (context) => WebviewHeatmap(),
+        WebviewAdvisory.routeName: (context) => WebviewAdvisory(),
+      },
     );
   }
 }
