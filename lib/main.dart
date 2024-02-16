@@ -1,65 +1,85 @@
+import 'package:afet_yonetim/services/provider/user.dart';
+import 'package:afet_yonetim/values.dart';
+import 'package:afet_yonetim/views/screens/auth/login.dart';
+import 'package:afet_yonetim/views/screens/auth/register.dart';
+import 'package:afet_yonetim/views/screens/home.dart';
+import 'package:afet_yonetim/views/screens/introduction.dart';
+import 'package:afet_yonetim/views/screens/victim.dart';
+import 'package:afet_yonetim/views/screens/volunteer.dart';
 import 'package:flutter/material.dart';
-import 'package:unisys/screens/covid_home.dart';
-import 'package:unisys/screens/home_screen.dart';
-import 'package:unisys/screens/phone_number_page.dart';
-import 'package:unisys/screens/pre_home.dart';
-import 'package:unisys/screens/first.dart';
-import 'package:unisys/screens/ph2.dart';
-import 'package:unisys/screens/report_covid.dart';
-import 'package:unisys/screens/report_emergency_covid.dart';
-import 'package:unisys/screens/report_emergency_page.dart';
-import 'package:unisys/screens/success.dart';
-import 'package:unisys/screens/summary_covid.dart';
-import 'package:unisys/screens/summary_page.dart';
-import 'package:unisys/screens/symptoms_page.dart';
-import 'package:unisys/screens/view_zone.dart';
-import 'package:unisys/screens/webview_advisory.dart';
-import 'package:unisys/screens/webview_guide.dart';
-import 'package:unisys/screens/webview_heatmap.dart';
-import 'package:unisys/utilities/constants.dart';
+import 'package:flutter_riverpod/flutter_riverpod.dart';
+import 'package:firebase_core/firebase_core.dart';
+import 'firebase_options.dart'; // TODO: Create this using flutterfire cli tool
 
-void main() => runApp(MyApp());
+import 'theme.dart';
 
-class MyApp extends StatelessWidget {
+Future<void> main() async {
+  WidgetsFlutterBinding.ensureInitialized();
+  await Firebase.initializeApp(
+    options: DefaultFirebaseOptions.currentPlatform,
+  );
+
+  runApp(
+    const ProviderScope(
+      child: MyApp(),
+    ),
+  );
+}
+
+class MyApp extends ConsumerWidget {
+  const MyApp({super.key});
+
   @override
-  Widget build(BuildContext context) {
+  Widget build(BuildContext context, ref) {
+    final data = ref.watch(userProvider);
     return MaterialApp(
-      debugShowCheckedModeBanner: false,
-      title: 'Unisys',
-      theme: ThemeData(
-        scaffoldBackgroundColor: kBackgroundColor,
-        appBarTheme: AppBarTheme(
-          color: kAppBarColor,
-          brightness: Brightness.light,
-          elevation: 6.0,
-          iconTheme: IconThemeData(
-            color: kBackgroundColor,
-          ),
-          actionsIconTheme: IconThemeData(
-            color: kBackgroundColor,
+      title: 'Afet Yonetim',
+      theme: Themes.lightTheme,
+      darkTheme: Themes.darkTheme,
+      home: data.when(
+        data: (user) {
+          if (user == null) {
+            return const IntroductionScreen();
+          } else {
+            currentUser = user;
+            return const HomeScreen();
+          }
+        },
+        error: (error, s) => const IntroductionScreen(),
+        loading: () => const Scaffold(
+          body: Center(
+            child: CircularProgressIndicator(),
           ),
         ),
       ),
-      initialRoute: '/',
-      routes: {
-        '/': (context) => First(),
-        First.routeName: (context) => First(),
-        PreHome.routeName: (context) => PreHome(),
-        HomeScreen.routeName: (context) => HomeScreen(),
-        PhoneNumberPage.routeName: (context) => PhoneNumberPage(),
-        PhoneNumberPage2.routeName: (context) => PhoneNumberPage2(),
-        ReportEmergencyPage.routeName: (context) => ReportEmergencyPage(),
-        SummaryPage.routeName: (context) => SummaryPage(),
-        WebviewGuide.routeName: (context) => WebviewGuide(),
-        Success.routeName: (context) => Success(),
-        CovidHome.routeName: (context) => CovidHome(),
-        ReportCovid.routeName: (context) => ReportCovid(),
-        SymptomsPage.routeName: (context) => SymptomsPage(),
-        ReportEmergencyCovid.routeName: (context) => ReportEmergencyCovid(),
-        SummaryCovid.routeName: (context) => SummaryCovid(),
-        ViewZone.routeName: (context) => ViewZone(),
-        WebviewHeatmap.routeName: (context) => WebviewHeatmap(),
-        WebviewAdvisory.routeName: (context) => WebviewAdvisory(),
+      onGenerateRoute: (RouteSettings settings) {
+        late Widget page;
+        switch (settings.name) {
+          case '/introduction':
+            page = const IntroductionScreen();
+            break;
+          case '/login':
+            page = const LoginScreen();
+            break;
+          case '/register':
+            page = const RegisterScreen();
+            break;
+          case '/home':
+            page = const HomeScreen();
+            break;
+          case '/victim':
+            page = const VictimScreen();
+            break;
+          case '/volunteer':
+            page = const VolunteerScreen();
+            break;
+          default:
+            throw Exception('Invalid route: ${settings.name}');
+        }
+        return MaterialPageRoute<void>(
+          settings: settings,
+          builder: (BuildContext context) => page,
+        );
       },
     );
   }
