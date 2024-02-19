@@ -1,86 +1,131 @@
-import 'package:afet_yonetim/services/provider/user.dart';
-import 'package:afet_yonetim/values.dart';
-import 'package:afet_yonetim/views/screens/auth/login.dart';
-import 'package:afet_yonetim/views/screens/auth/register.dart';
-import 'package:afet_yonetim/views/screens/home.dart';
-import 'package:afet_yonetim/views/screens/introduction.dart';
-import 'package:afet_yonetim/views/screens/victim.dart';
-import 'package:afet_yonetim/views/screens/volunteer.dart';
-import 'package:flutter/material.dart';
-import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:firebase_core/firebase_core.dart';
-import 'firebase_options.dart'; // TODO: Create this using flutterfire cli tool
+import 'package:flutter/material.dart';
+import 'package:plants_doctor/LOGIN.dart';
+import 'package:plants_doctor/SIGNUP.dart';
+import 'package:plants_doctor/firebase_options.dart';
 
-import 'theme.dart';
-
-Future<void> main() async {
+void main() async {
   WidgetsFlutterBinding.ensureInitialized();
   await Firebase.initializeApp(
     options: DefaultFirebaseOptions.currentPlatform,
   );
-
-  runApp(
-    const ProviderScope(
-      child: MyApp(),
-    ),
-  );
+  runApp(const PlantsDoctor());
 }
 
-class MyApp extends ConsumerWidget {
-  const MyApp({super.key});
+class PlantsDoctor extends StatelessWidget {
+  const PlantsDoctor({Key? key}) : super(key: key);
 
   @override
-  Widget build(BuildContext context, ref) {
-    final data = ref.watch(userProvider);
+  Widget build(BuildContext context) {
     return MaterialApp(
-      title: 'Afet Yonetim',
-      theme: Themes.lightTheme,
-      darkTheme: Themes.darkTheme,
-      home: data.when(
-        data: (user) {
-          if (user == null) {
-            return const IntroductionScreen();
-          } else {
-            currentUser = user;
-            return const HomeScreen();
-          }
-        },
-        error: (error, s) => const IntroductionScreen(),
-        loading: () => const Scaffold(
-          body: Center(
-            child: CircularProgressIndicator(),
+      debugShowCheckedModeBanner: false,
+      title: 'Plants Doctor',
+      theme: ThemeData(
+        primarySwatch: Colors.green,
+      ),
+      home: WelcomePage(),
+    );
+  }
+}
+
+class WelcomePage extends StatelessWidget {
+  @override
+  Widget build(BuildContext context) {
+    return Scaffold(
+      backgroundColor: Colors.green[200],
+      appBar: AppBar(
+        title: Text(
+          "Cure your plants with ease.. 🌱",
+          style: TextStyle(
+            fontSize: 20,
+            color: Colors.yellow[200],
+            fontStyle: FontStyle.italic,
+          ),
+        ),
+        actions: [
+          IconButton(
+            icon: Icon(Icons.info, color: Colors.orangeAccent[200]),
+            onPressed: () {
+              showDialog(
+                context: context,
+                builder: (BuildContext context) {
+                  return AlertDialog(
+                    title: Text("Info"),
+                    content: Text(
+                        "Plants Doctor is a simple and easy-to-use application that helps you grow healthy plants. With this app, you can get quick and accurate diagnoses for your plant's diseases, browse informative articles about plant care, and connect with a community of plant enthusiasts. Whether you're an experienced gardener or just starting out, Plants Doctor is the perfect tool to keep your plants happy and thriving. Download now and start your plant journey today!"),
+                    actions: [
+                      TextButton(
+                        onPressed: () {
+                          Navigator.of(context).pop();
+                        },
+                        child: Text("Great!"),
+                      ),
+                    ],
+                  );
+                },
+              );
+            },
+          ),
+        ],
+        backgroundColor: Colors.green[800],
+      ),
+      body: SingleChildScrollView(
+        child: Center(
+          child: Column(
+            mainAxisAlignment: MainAxisAlignment.center,
+            children: [
+              Image.asset(
+                "assets/images/logo.png",
+                width: MediaQuery.of(context).size.width * 0.6,
+              ),
+              SizedBox(height: 32),
+              ElevatedButton(
+                onPressed: () {
+                  Navigator.push(context,
+                      MaterialPageRoute(builder: (context) => LoginPage()));
+                },
+                child: Padding(
+                  padding: const EdgeInsets.symmetric(
+                    horizontal: 32.0,
+                    vertical: 16.0,
+                  ),
+                  child: Text(
+                    "Login",
+                    style: TextStyle(fontSize: 18),
+                  ),
+                ),
+                style: ButtonStyle(
+                  backgroundColor:
+                      MaterialStateProperty.all<Color>(Colors.green[800]!),
+                ),
+              ),
+              SizedBox(height: 16),
+              ElevatedButton(
+                onPressed: () {
+                  Navigator.push(context,
+                      MaterialPageRoute(builder: (context) => SignUpPage()));
+                },
+                child: Padding(
+                  padding: const EdgeInsets.symmetric(
+                    horizontal: 32.0,
+                    vertical: 16.0,
+                  ),
+                  child: Text(
+                    "Signup",
+                    style: TextStyle(fontSize: 18),
+                  ),
+                ),
+                style: ButtonStyle(
+                  backgroundColor:
+                      MaterialStateProperty.all<Color>(Colors.white),
+                  foregroundColor:
+                      MaterialStateProperty.all<Color>(Colors.green[800]!),
+                ),
+              ),
+            ],
           ),
         ),
       ),
-      onGenerateRoute: (RouteSettings settings) {
-        late Widget page;
-        switch (settings.name) {
-          case '/introduction':
-            page = const IntroductionScreen();
-            break;
-          case '/login':
-            page = const LoginScreen();
-            break;
-          case '/register':
-            page = const RegisterScreen();
-            break;
-          case '/home':
-            page = const HomeScreen();
-            break;
-          case '/victim':
-            page = const VictimScreen();
-            break;
-          case '/volunteer':
-            page = const VolunteerScreen();
-            break;
-          default:
-            throw Exception('Invalid route: ${settings.name}');
-        }
-        return MaterialPageRoute<void>(
-          settings: settings,
-          builder: (BuildContext context) => page,
-        );
-      },
     );
   }
 }
