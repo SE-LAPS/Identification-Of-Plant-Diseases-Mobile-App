@@ -1,11 +1,11 @@
 {
-    "name": "afet_yonetim",
-    "short_name": "afet_yonetim",
+    "name": "Plants Doctor",
+    "short_name": "Plants Doctor",
     "start_url": ".",
     "display": "standalone",
-    "background_color": "#0175C2",
-    "theme_color": "#0175C2",
-    "description": "A new Flutter project.",
+    "background_color": "#hexcode",
+    "theme_color": "#hexcode",
+    "description": "This app is designed to help plant owners diagnose and treat diseases that may affect their plants. It uses a machine learning model to predict whether a plant is diseased or healthy based on an uploaded image.",
     "orientation": "portrait-primary",
     "prefer_related_applications": false,
     "icons": [
